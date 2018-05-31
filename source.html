@@ -1,0 +1,136 @@
+<pre id="e" style="transform:scaleY(.5);text-align:center">
+<script>
+	var fieldSize = 14, s = ' ', b = 0, n = "\n", direction, newDirection, snake = curtain = [], foodX, foodY, timer, m = Math, d = m.random, reset = clearInterval, launch = setInterval;
+
+	r = (n, f) => {
+		for (j = 0; j++ < n; f(j));
+	};
+	
+	t = (text) => {
+		e.innerHTML += text;
+	};
+	
+	redraw = () => {
+		e.innerHTML = '';
+		r(fieldSize + 2, () => t(b)); t(n);
+		for (y = fieldSize - 1; y >= 0; y--) {
+			t(b);
+			for (x = 0; x <= fieldSize - 1; x++)
+				isSnakeAtCoordinates(x, y) || foodX == x && foodY == y || ~curtain.indexOf(y) ? t(b) : t(s);
+			t(b); t(n);
+		}
+		r(fieldSize + 2, () => t(b));
+	};
+	
+	onkeydown = (event) => {
+		/*
+		keycodes | constant (=code-36) | direction
+		37 | 1 | left
+		38 | 2 | up
+		39 | 3 | right
+		40 | 4 | down
+		*/
+		temp = event.keyCode - 36;
+		if (m.abs(temp - direction) != 2)
+			newDirection = temp;
+	};
+	
+	coordinateLoopIncrement = (crd) => crd == fieldSize - 1 ? 0 : crd + 1;
+
+	coordinateLoopDecrement = (crd) => crd == 0 ? fieldSize - 1 : crd - 1;
+
+	step = () => {
+		if (newDirection) {
+			direction = newDirection;
+			newDirection = 0;
+		}
+		
+		newX = snake[0][0];
+		newY = snake[0][1];
+
+		if (direction == 1) newX = coordinateLoopDecrement(newX);
+		if (direction == 2) newY = coordinateLoopIncrement(newY);
+		if (direction == 3) newX = coordinateLoopIncrement(newX);
+		if (direction == 4) newY = coordinateLoopDecrement(newY);
+		
+		if (!isSnakeAtCoordinates(newX, newY)) {
+			snake.unshift([newX, newY]);
+			snake[0][0] == foodX && snake[0][1] == foodY ? addFood() : snake.pop();
+		} else {
+			reset(timer);
+			restart();
+		}
+		
+	};
+
+	isSnakeAtCoordinates = (x, y) => {
+		for (k = 0; k < snake.length; k++)
+			if (snake[k][0] == x && snake[k][1] == y) return 1;
+		
+	};
+
+	getRandomCoordinate = ()=>~~(d() * (fieldSize - 1));
+
+	addFood = () => {
+		do {
+			foodX = getRandomCoordinate();
+			foodY = getRandomCoordinate();
+		} while (isSnakeAtCoordinates(foodX, foodY));
+	};
+
+	prepareField = () => {
+		snake = [];
+		direction = 3;
+		r(3, (i)=>(snake.push([~~(fieldSize/2-i), ~~(fieldSize/2)])));
+		addFood();
+		redraw();
+	};
+
+	startGame = () => {
+		timer = launch(() => {
+			step();
+			redraw();
+		}, 150);
+	};
+
+	prepareField();
+	startGame();
+	
+	restart = () => {
+		l = 0;
+		up = 1;
+		timer = launch(() => {
+			redraw();
+			if (up) {
+				curtain.push(l);
+				l++;
+				if (l == fieldSize) up = 0;
+			} else {
+				if (l == fieldSize) prepareField();
+				curtain.pop();
+				l--;
+				if (!l) {
+					reset(timer);
+					startGame();
+				}
+			}
+		}, 20);
+	};
+
+	/* Todo:
+		Source:
+			remove restart
+			remove step
+			rewrite restart to r(i)
+			rewrite isSnakeAtCoordinates to r(i)
+			rewrite redraw to r(i)
+			doom screen?
+
+		Minifier:
+			if(){...} -> if()...
+		
+		Target size: 1024
+		Current size: 1023
+	*/
+
+</script>

@@ -1,0 +1,319 @@
+<div class="wrapper">
+	<div class="part">
+		<h2>Source code</h2>
+		<textarea id="source" autocomplete="off">
+<pre id="e" style="transform:scaleY(.5);text-align:center">
+<script>
+	var fieldSize = 14, s = ' ', b = 0, n = "\n", direction, newDirection, snake = curtain = [], foodX, foodY, timer, m = Math, d = m.random, reset = clearInterval, launch = setInterval;
+
+	r = (n, f) => {
+		for (j = 0; j++ < n; f(j));
+	};
+	
+	t = (text) => {
+		e.innerHTML += text;
+	};
+	
+	redraw = () => {
+		e.innerHTML = '';
+		r(fieldSize + 2, () => t(b)); t(n);
+		for (y = fieldSize - 1; y >= 0; y--) {
+			t(b);
+			for (x = 0; x <= fieldSize - 1; x++)
+				isSnakeAtCoordinates(x, y) || foodX == x && foodY == y || ~curtain.indexOf(y) ? t(b) : t(s);
+			t(b); t(n);
+		}
+		r(fieldSize + 2, () => t(b));
+	};
+	
+	onkeydown = (event) => {
+		/*
+		keycodes | constant (=code-36) | direction
+		37 | 1 | left
+		38 | 2 | up
+		39 | 3 | right
+		40 | 4 | down
+		*/
+		temp = event.keyCode - 36;
+		if (m.abs(temp - direction) != 2)
+			newDirection = temp;
+	};
+	
+	coordinateLoopIncrement = (crd) => crd == fieldSize - 1 ? 0 : crd + 1;
+
+	coordinateLoopDecrement = (crd) => crd == 0 ? fieldSize - 1 : crd - 1;
+
+	step = () => {
+		if (newDirection) {
+			direction = newDirection;
+			newDirection = 0;
+		}
+		
+		newX = snake[0][0];
+		newY = snake[0][1];
+
+		if (direction == 1) newX = coordinateLoopDecrement(newX);
+		if (direction == 2) newY = coordinateLoopIncrement(newY);
+		if (direction == 3) newX = coordinateLoopIncrement(newX);
+		if (direction == 4) newY = coordinateLoopDecrement(newY);
+		
+		if (!isSnakeAtCoordinates(newX, newY)) {
+			snake.unshift([newX, newY]);
+			snake[0][0] == foodX && snake[0][1] == foodY ? addFood() : snake.pop();
+		} else {
+			reset(timer);
+			restart();
+		}
+		
+	};
+
+	isSnakeAtCoordinates = (x, y) => {
+		for (k = 0; k < snake.length; k++)
+			if (snake[k][0] == x && snake[k][1] == y) return 1;
+		
+	};
+
+	getRandomCoordinate = ()=>~~(d() * (fieldSize - 1));
+
+	addFood = () => {
+		do {
+			foodX = getRandomCoordinate();
+			foodY = getRandomCoordinate();
+		} while (isSnakeAtCoordinates(foodX, foodY));
+	};
+
+	prepareField = () => {
+		snake = [];
+		direction = 3;
+		r(3, (i)=>(snake.push([~~(fieldSize/2-i), ~~(fieldSize/2)])));
+		addFood();
+		redraw();
+	};
+
+	startGame = () => {
+		timer = launch(() => {
+			step();
+			redraw();
+		}, 150);
+	};
+
+	prepareField();
+	startGame();
+	
+	restart = () => {
+		l = 0;
+		up = 1;
+		timer = launch(() => {
+			redraw();
+			if (up) {
+				curtain.push(l);
+				l++;
+				if (l == fieldSize) up = 0;
+			} else {
+				if (l == fieldSize) prepareField();
+				curtain.pop();
+				l--;
+				if (!l) {
+					reset(timer);
+					startGame();
+				}
+			}
+		}, 20);
+	};
+
+	/* Todo:
+		Source:
+			remove restart
+			remove step
+			rewrite restart to r(i)
+			rewrite isSnakeAtCoordinates to r(i)
+			rewrite redraw to r(i)
+			doom screen?
+
+		Minifier:
+			if(){...} -> if()...
+		
+		Target size: 1024
+		Current size: 1023
+	*/
+
+</script>
+</textarea>
+	<div class="size">Source size: <span class="digit-value" id="source-size">?</span> bytes</div>
+	</div>
+	<div class="part">
+		<h2>Compressed result</h2>
+		<textarea id="result" autocomplete="off"></textarea>
+		<div class="size">Result size: <span class="digit-value" id="result-size">?</span> bytes</div>
+	</div>
+</div>
+<div class="overall">
+	<div>Compression rate: <span class="digit-value" id="compression-rate">?</span>%</div>
+</div>
+<div class="result-execution-wrapper">
+	<iframe id="result-execution-box"></iframe>
+</div>
+
+<style>
+	* {
+		box-sizing: border-box;
+	}
+	.wrapper::after {
+		display: block;
+		content: '';
+		clear: both;
+	}
+	.wrapper .part {
+		float: left;
+		width: 50%;
+		
+	}
+	.wrapper .part textarea {
+		width: 100%;
+		height: 400px;
+	}
+	.wrapper .part .size {
+		text-align: center;
+	}
+	.digit-value {
+		font-weight: bold;
+	}
+	.overall {
+		width: 300px;
+		margin-top: 20px;
+		margin-left: auto;
+		margin-right: auto;
+		padding: 20px;
+	}
+	#result-execution-box {
+		width: 100%;
+		height: 250px;
+	}
+</style>
+<script>
+	function tokenizer(source) {
+
+	}
+	String.prototype.replaceAll = function(search, replace){
+		return this.split(search).join(replace);
+	}
+
+	function compress(text) {
+		text = text.replace(/\t+/g, ' ');
+		text = text.replace(/\n\s+/g, '\n');
+		text = text.replace(/\n/g, ''); // remove line breaks
+		text = text.replaceAll(/\/\*.+?\*\//, ''); // remove /* comments
+
+		var usedWords = [
+			'snake', //12
+			'fieldSize', //12
+			'direction', //9
+			'newX', //7
+			'newY', //7
+			'crd', //6
+			'timer', //5
+			'newDirection', //5
+			'foodX', //5
+			'foodY', //5
+			'redraw', //4
+			'curtain', //4
+			'isSnakeAtCoordinates', //4
+			'getRandomCoordinate', //3
+			'prepareField', //3
+			'startGame', //3
+			'coordinateLoopIncrement', //3
+			'coordinateLoopDecrement', //3
+			'addFood', //3
+			'temp', //3
+			'reset', //3
+			'launch', //3
+			'restart', //2
+			'step', //2
+			'event', //2
+		];
+		
+		var reservedVariables = ['e', 's', 'b', 'n', 'm', 'f', 't', 'x', 'y', 'k', 'r', 'i', 'j', 'l', 'd'];
+
+		// a 97 .. z 122
+		// A 65 .. Z 90
+
+		var replacementCandidates = [];
+		for (var i = 97; i <= 122; i++) {
+			var char = String.fromCharCode(i);
+			if (reservedVariables.indexOf(char) == -1) {
+				replacementCandidates.push(char);
+			}
+		}
+
+		for (var i = 65; i <= 90; i++) {
+			var char = String.fromCharCode(i);
+			if (reservedVariables.indexOf(char) == -1) {
+				replacementCandidates.push(char);
+			}
+		}
+		
+		var replacements = {
+			' = ': '=',
+			' == ': '==',
+			' && ': '&&',
+			' || ': '||',
+			' ? ': '?',
+			' : ': ':',
+			' - ': '-',
+			' + ': '+',
+			' += ': '+=',
+			' <= ': '<=',
+			' >= ': '>=',
+			' != ': '!=',
+			' < ': '<',
+			' > ': '>',
+			' => ': '=>',
+			'; ': ';',
+			', ': ',',
+			') ': ')',
+			'( ': '(',
+			'} ': '}',
+			'{ ': '{',
+			' )': ')',
+			' (': '(',
+			' }': '}',
+			' {': '{',
+			'if (': 'if(',
+			' else ': 'else',
+		}
+
+		for (var i = 0; i < usedWords.length; i++) {
+			var replaceWord = usedWords[i];
+			var replaceBy = replacementCandidates.shift();
+			//console.log(replaceWord, '=>', replaceBy);
+			replacements[replaceWord] = replaceBy;
+		}
+
+		for (replacement in replacements) {
+			text = text.replaceAll(replacement, replacements[replacement]);
+		}
+		return text;
+	}
+
+
+	function runMinification() {
+		var compressedSource = compress(source.value);
+		result.value = compressedSource;
+
+		var sourceSize = source.value.length;
+		var resultSize = compressedSource.length;
+		var compressionRate = Math.round(100 - resultSize / sourceSize * 100);
+
+		document.getElementById('source-size').innerHTML = sourceSize;
+		document.getElementById('result-size').innerHTML = resultSize;
+		document.getElementById('compression-rate').innerHTML = compressionRate;
+		
+		document.getElementById('result-execution-box').src = "data:text/html;charset=utf-8," + escape(compressedSource);
+	}
+
+	document.addEventListener('DOMContentLoaded', runMinification);
+	source.addEventListener('input', runMinification);
+	runMinification();
+
+
+</script>
