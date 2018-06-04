@@ -4,18 +4,16 @@
 		<textarea id="source" autocomplete="off">
 <pre id="e" style="transform:scaleY(.5);text-align:center">
 <script>
-	var fieldSize = 14, s = ' ', b = 0, n = "\n", direction, newDirection, snake = curtain = [], foodX, foodY, timer, m = Math, d = m.random, reset = clearInterval, launch = setInterval;
+	var fieldSize = 14, s = ' ', b = 0, n = "\n", direction, newDirection, snake = curtain = [], foodX, foodY, timer, m = Math, d = m.random, reset = clearInterval, launch = setInterval, content = 'innerHTML';
 
 	r = (n, f) => {
 		for (j = 0; j++ < n; f(j));
 	};
 	
-	t = (t) => {
-		e.innerHTML += t;
-	};
+	t = (t) => e[content] += t;
 	
 	redraw = () => {
-		e.innerHTML = '';
+		e[content] = n;
 		r(fieldSize + 2, () => t(b)); t(n);
 		for (y = fieldSize - 1; y >= 0; y--) {
 			t(b);
@@ -73,7 +71,7 @@
 		
 	};
 
-	getRandomCoordinate = ()=>~~(d() * (fieldSize - 1));
+	getRandomCoordinate = () => ~~(d() * (fieldSize - 1));
 
 	addFood = () => {
 		do {
@@ -134,7 +132,7 @@
 			if(){...} -> if()...
 		
 		Target size: 1024
-		Current size: 1014
+		Current size: 1010
 	*/
 
 </script>
@@ -228,6 +226,7 @@
 			'reset', //3
 			'launch', //3
 			'up', //3
+			'content', //3
 			'restart', //2
 			'step', //2
 			'event', //2
