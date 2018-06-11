@@ -1,5 +1,7 @@
 # snake-js-1kb
 
+![Overview](images/overview.png)
+
 ## What is this?
 It's extra-small classic snake game, implemented on js.
 
