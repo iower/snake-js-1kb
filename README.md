@@ -3,7 +3,7 @@
 ![Overview](images/overview.png)
 
 ## What is this?
-It's extra-small classic snake game, implemented on js.
+It's extra-small classic snake game, implemented on js. [Try it here!](https://iower.github.io/snake-js-1kb/result.html)
 
 ## nFAQ
 
