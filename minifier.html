@@ -12,7 +12,7 @@
 	
 	t = (t) => e[content] += t;
 	
-	redraw = () => {
+	redraw = _ => {
 		e[content] = n;
 		r(fieldSize + 2, () => t(b)); t(n);
 		for (y = fieldSize - 1; y >= 0; y--) {
@@ -37,11 +37,11 @@
 			newDirection = temp;
 	};
 	
-	coordinateLoopIncrement = (crd) => crd == fieldSize - 1 ? 0 : crd + 1;
+	coordinateLoopIncrement = crd => crd == fieldSize - 1 ? 0 : crd + 1;
 
-	coordinateLoopDecrement = (crd) => crd == 0 ? fieldSize - 1 : crd - 1;
+	coordinateLoopDecrement = crd => crd == 0 ? fieldSize - 1 : crd - 1;
 
-	step = () => {
+	step = _ => {
 		if (newDirection) {
 			direction = newDirection;
 			newDirection = 0;
@@ -73,14 +73,14 @@
 
 	getRandomCoordinate = () => ~~(d() * (fieldSize - 1));
 
-	addFood = () => {
+	addFood = _ => {
 		do {
 			foodX = getRandomCoordinate();
 			foodY = getRandomCoordinate();
 		} while (isSnakeAtCoordinates(foodX, foodY));
 	};
 
-	prepareField = () => {
+	prepareField = _ => {
 		snake = [];
 		direction = 3;
 		r(3, (i)=>(snake.push([~~(fieldSize/2-i), ~~(fieldSize/2)])));
@@ -88,7 +88,7 @@
 		redraw();
 	};
 
-	startGame = () => {
+	startGame = _ => {
 		timer = launch(() => {
 			step();
 			redraw();
@@ -98,7 +98,7 @@
 	prepareField();
 	startGame();
 	
-	restart = () => {
+	restart = _ => {
 		l = 0;
 		up = 1;
 		timer = launch(() => {
@@ -118,23 +118,6 @@
 			}
 		}, 20);
 	};
-
-	/* Todo:
-		Source:
-			remove restart
-			remove step
-			rewrite restart to r(i)
-			rewrite isSnakeAtCoordinates to r(i)
-			rewrite redraw to r(i)
-			doom screen?
-
-		Minifier:
-			if(){...} -> if()...
-		
-		Target size: 1024
-		Current size: 1010
-	*/
-
 </script>
 </textarea>
 	<div class="size">Source size: <span class="digit-value" id="source-size">?</span> bytes</div>
