@@ -6,21 +6,21 @@
 		for (j = 0; j++ < n; f(j));
 	};
 	
-	t = (t) => e[content] += t;
+	t = t => e[content] += t;
 	
 	redraw = _ => {
 		e[content] = n;
-		r(fieldSize + 2, () => t(b)); t(n);
+		r(fieldSize + 2, _ => t(b)); t(n);
 		for (y = fieldSize - 1; y >= 0; y--) {
 			t(b);
 			for (x = 0; x <= fieldSize - 1; x++)
 				isSnakeAtCoordinates(x, y) || foodX == x && foodY == y || ~curtain.indexOf(y) ? t(b) : t(s);
 			t(b); t(n);
 		}
-		r(fieldSize + 2, () => t(b));
+		r(fieldSize + 2, _ => t(b));
 	};
 	
-	onkeydown = (event) => {
+	onkeydown = event => {
 		/*
 		keycodes | constant (=code-36) | direction
 		37 | 1 | left
@@ -55,8 +55,7 @@
 			snake.unshift([newX, newY]);
 			snake[0][0] == foodX && snake[0][1] == foodY ? addFood() : snake.pop();
 		} else {
-			reset(timer);
-			restart();
+			restart(reset(timer));
 		}
 		
 	};
@@ -67,7 +66,7 @@
 		
 	};
 
-	getRandomCoordinate = () => ~~(d() * (fieldSize - 1));
+	getRandomCoordinate = _ => ~~(d() * (fieldSize - 1));
 
 	addFood = _ => {
 		do {
@@ -90,9 +89,8 @@
 			redraw();
 		}, 150);
 	};
-
-	prepareField();
-	startGame();
+	
+	startGame(prepareField());
 	
 	restart = _ => {
 		l = 0;
@@ -108,8 +106,7 @@
 				curtain.pop();
 				l--;
 				if (!l) {
-					reset(timer);
-					startGame();
+					startGame(reset(timer));
 				}
 			}
 		}, 20);
